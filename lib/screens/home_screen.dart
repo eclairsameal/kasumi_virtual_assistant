@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 
 class HomeScreen extends StatefulWidget
@@ -10,6 +12,48 @@ class HomeScreen extends StatefulWidget
 class _HomeScreenState extends State<HomeScreen>
 {
   TextEditingController userInputTextEditingController = TextEditingController();
+  final SpeechToText speechToTextInstance = SpeechToText();
+  String recordedAudioString = "";
+
+  void initializeSpeechToText() async
+  {
+    await speechToTextInstance.initialize();
+    setState(() {
+
+    });
+  }
+
+  void startListeningNow() async
+  {
+    FocusScope.of(context).unfocus();
+    await speechToTextInstance.listen(onResult: onSpeechToTextResult);
+    setState(() {
+
+    });
+  }
+
+  void stopListeningNow() async
+  {
+    await speechToTextInstance.stop();
+    setState(() {
+
+    });
+  }
+
+
+  void onSpeechToTextResult(SpeechRecognitionResult recognitionResult)
+  {
+    recordedAudioString = recognitionResult.recognizedWords;
+    print("Speech Result:");
+    print(recordedAudioString);
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    initializeSpeechToText();
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -65,7 +109,9 @@ class _HomeScreenState extends State<HomeScreen>
             padding:  const EdgeInsets.only(right: 8, left: 4),
             child: InkWell(
               onTap: (){
-
+                speechToTextInstance.isListening
+                    ? stopListeningNow()
+                    : startListeningNow();
               },
               child: const Icon(
                 Icons.image,
