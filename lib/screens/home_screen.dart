@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -14,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen>
   TextEditingController userInputTextEditingController = TextEditingController();
   final SpeechToText speechToTextInstance = SpeechToText();
   String recordedAudioString = "";
+  bool isLoading = false;
 
   void initializeSpeechToText() async
   {
@@ -125,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen>
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              const SizedBox(height: 40,),
               Center(
                 child: InkWell(
                   onTap: (){
@@ -132,7 +135,16 @@ class _HomeScreenState extends State<HomeScreen>
                         ? stopListeningNow()
                         : startListeningNow();
                   },
-                    child: Image.asset(
+                    child: speechToTextInstance.isListening
+                        ? Center(child: LoadingAnimationWidget.beat(
+                            size: 300,
+                            color: speechToTextInstance.isListening
+                              ? Colors.deepPurple
+                              : isLoading
+                              ? Colors.deepPurple[400]!
+                              : Colors.deepPurple[200]!
+                        ),)
+                        : Image.asset(
                       "images/assistant_icon.png",
                       height: 300,
                       width: 300,
@@ -162,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen>
                   InkWell(
                     onTap:(){
                       print("send user input");  // Test button event
+                      // stopListeningNow();
                     },
                     child: AnimatedContainer(
                       padding: const EdgeInsets.all(15),
@@ -175,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen>
                       curve: Curves.bounceInOut,
                       child: const Icon(
                         Icons.send,
+                        // Icons.close,
                         color: Colors.white,
                         size: 30,
                       ),
