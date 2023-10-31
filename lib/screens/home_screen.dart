@@ -14,6 +14,18 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context)
   {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () {
+          
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Image.asset(
+            "images/sound.png",
+          ),
+        ),
+      ),
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(
