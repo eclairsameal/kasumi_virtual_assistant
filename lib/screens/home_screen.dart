@@ -109,9 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
             padding:  const EdgeInsets.only(right: 8, left: 4),
             child: InkWell(
               onTap: (){
-                speechToTextInstance.isListening
-                    ? stopListeningNow()
-                    : startListeningNow();
+
               },
               child: const Icon(
                 Icons.image,
@@ -130,7 +128,9 @@ class _HomeScreenState extends State<HomeScreen>
               Center(
                 child: InkWell(
                   onTap: (){
-
+                    speechToTextInstance.isListening
+                        ? stopListeningNow()
+                        : startListeningNow();
                   },
                     child: Image.asset(
                       "images/assistant_icon.png",
