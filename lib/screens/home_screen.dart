@@ -16,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen>
   final SpeechToText speechToTextInstance = SpeechToText();
   String recordedAudioString = "";
   bool isLoading = false;
+  String modeOpenAI = "chat";
 
   void initializeSpeechToText() async
   {
@@ -42,12 +43,25 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-
   void onSpeechToTextResult(SpeechRecognitionResult recognitionResult)
   {
     recordedAudioString = recognitionResult.recognizedWords;
+
+    speechToTextInstance.isListening
+        ? null
+        : sendRequestToOpenAI(recordedAudioString);
+
     print("Speech Result:");
     print(recordedAudioString);
+  }
+
+  Future<void> sendRequestToOpenAI(String userInput)
+  {
+    stopListeningNow();
+
+    setState(() {
+      isLoading = true; // 發送請求需要一點時間，所以設定為 true
+    });
   }
 
   @override
