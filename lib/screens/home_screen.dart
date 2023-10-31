@@ -43,6 +43,38 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         titleSpacing: 10,
         elevation: 14,
+        actions: [
+
+          //chat
+          Padding(
+            padding:  const EdgeInsets.only(right: 4, top: 4),
+            child: InkWell(
+              onTap: (){
+
+              },
+              child: const Icon(
+                Icons.chat,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+          ),
+
+          //image
+          Padding(
+            padding:  const EdgeInsets.only(right: 8, left: 4),
+            child: InkWell(
+              onTap: (){
+
+              },
+              child: const Icon(
+                Icons.image,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
