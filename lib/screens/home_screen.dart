@@ -1,7 +1,12 @@
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+
+import '../api/api_service.dart';
 
 
 class HomeScreen extends StatefulWidget
@@ -17,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen>
   String recordedAudioString = "";
   bool isLoading = false;
   String modeOpenAI = "chat";
+  String imageUrlFromOpenAI = "";
+  String answerTextUrlFromOpenAI = "";
 
   void initializeSpeechToText() async
   {
@@ -55,12 +62,57 @@ class _HomeScreenState extends State<HomeScreen>
     print(recordedAudioString);
   }
 
-  Future<void> sendRequestToOpenAI(String userInput)
+  Future<void> sendRequestToOpenAI(String userInput) async
   {
     stopListeningNow();
 
     setState(() {
       isLoading = true; // 發送請求需要一點時間，所以設定為 true
+    });
+    // 送要求給 openai 利用 APIService
+    await APIService().requestOpenAI(userInput, modeOpenAI, 2000).then((value)
+    {
+      setState(() {
+        isLoading = false;
+      });
+
+      if(value.statusCode == 401)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "Api Key you are/were using expired or it is not working anymore.",
+            ),
+          ),
+        );
+      }
+      userInputTextEditingController.clear();
+      
+      final responseAvailable = jsonDecode(value.body);
+
+      if(modeOpenAI == "chat")
+      {
+        answerTextUrlFromOpenAI = utf8.decode(responseAvailable["choices"][0]["text"].toString().codeUnits);
+      }
+      else
+      {
+        // image generation
+        setState(() {
+          imageUrlFromOpenAI = responseAvailable["data"][0]["url"];
+        });
+      }
+      
+    }).catchError((errorMessage){
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+              "Error: " + errorMessage.toString()
+            ),
+        ),
+      );
     });
   }
 
@@ -189,6 +241,10 @@ class _HomeScreenState extends State<HomeScreen>
                     onTap:(){
                       print("send user input");  // Test button event
                       // stopListeningNow();
+                      if(userInputTextEditingController.text.isNotEmpty)
+                      {
+                        sendRequestToOpenAI(userInputTextEditingController.text.toString());
+                      }
                     },
                     child: AnimatedContainer(
                       padding: const EdgeInsets.all(15),
